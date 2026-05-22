@@ -70,3 +70,47 @@ Dado que los PC de la universidad no cuentan con HeidiSQL instalado de forma ind
 ### Paso 5: Correr los Microservicios
 
 Vuelve a VS Code, ve al Spring Boot Dashboard (o usa la terminal integrada de VS Code que sí te deja compilar Java) y dale Play a cada microservicio para que se conecten a la base de datos de Docker y empiecen a funcionar.
+
+# ENDPOINTS NECESARIOS
+```
+--Todos deberían tener estos ENDPOINTS
+@GetMapping("/listar")
+@PostMapping("/crear")
+@GetMapping("/buscar/{id}")
+@PutMapping("/actualizar/{id}")
+@DeleteMapping("/eliminar/{id}")
+
+--ENDPOINTS exclusivos de cada microservicio
+--Autenticación
+@GetMapping("/login")
+
+--Citas
+@GetMapping("/paciente/{idPaciente}")
+@GetMapping("/medico/{idMedico}")
+@PutMapping("/{id}/confirmar")
+@PutMapping("/{id}/cancelar")
+
+--Soporte
+@GetMapping("/cita/{id}")
+@GetMapping("/verificar-cita/{id}")
+@PostMapping("/ticket-correo")
+@PostMapping("/ticket-resultados")
+
+--Historial Clínico
+@GetMapping("/paciente/{idPaciente}")
+@GetMapping("/fecha/{fechaConsulta}")
+@GetMapping("/diagnostico/{diagnostico}")
+
+--Examenes
+@GetMapping("/paciente/{id}")
+
+--Notificaciones
+@PostMapping("/enviar")
+
+--Pagos
+
+--Recetas
+@GetMapping("/detalle/paciente/{idPaciente}")
+@GetMapping("/paciente/{idPaciente}")
+@GetMapping("/medico/{idMedico}")
+```
