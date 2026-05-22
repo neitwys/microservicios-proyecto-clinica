@@ -21,7 +21,7 @@ Este repositorio contiene los microservicios que forman parte del **Proyecto Cl�
 ## 🚀 Guía de Inicio Rápido (Para los PC de la U)
 
 Sigue estos pasos exactos cada vez que te sientes en un computador de la universidad para levantar el entorno. Como las terminales de los PC están bloqueadas, usaremos la terminal interna de Docker Desktop.
-Paso 1: Clonar el proyecto
+### Paso 1: Clonar el proyecto
 
     Clona este repositorio en el equipo usando la interfaz visual de VS Code.
 
@@ -29,13 +29,13 @@ Paso 1: Clonar el proyecto
 
     Haz clic derecho sobre la carpeta raíz en el explorador de VS Code y selecciona "Copy Path" (Copiar ruta). La necesitaremos en el paso 3.
 
-Paso 2: Abrir Docker Desktop
+### Paso 2: Abrir Docker Desktop
 
     Abre la aplicación de Docker Desktop desde el menú de inicio.
 
     Espera a que el motor encienda por completo (icono verde abajo a la izquierda).
 
-Paso 3: Levantar las Bases de Datos (Desde la Terminal de Docker)
+### Paso 3: Levantar las Bases de Datos (Desde la Terminal de Docker)
 
 Dado que la terminal de VS Code no reconoce el comando docker por restricciones de la U, usaremos la terminal propia de Docker Desktop:
 
@@ -53,7 +53,7 @@ Dado que la terminal de VS Code no reconoce el comando docker por restricciones 
 
     docker compose up -d
 
-Paso 4: Verificar las Bases de Datos (Uso de Laragon)
+### Paso 4: Verificar las Bases de Datos (Uso de Laragon)
 
 Dado que los PC de la universidad no cuentan con HeidiSQL instalado de forma independiente, utilizaremos el que viene integrado en Laragon:
 
