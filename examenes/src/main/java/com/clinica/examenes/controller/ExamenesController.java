@@ -3,12 +3,7 @@ package com.clinica.examenes.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.clinica.examenes.dto.ExamenDetalleDTO;
 import com.clinica.examenes.model.Examenes;
@@ -22,28 +17,73 @@ public class ExamenesController {
 
     private final ExamenesService service;
 
-    public ExamenesController(ExamenesService service){
+    public ExamenesController(ExamenesService service) {
         this.service = service;
     }
 
 
+    // POST - CREAR (201 CREATED)
+    @PostMapping("/crear")
+    public ResponseEntity<Examenes> guardarExamenes(
+            @Valid @RequestBody Examenes examenes) {
 
-    @PostMapping("/guardar")
-    public ResponseEntity<Examenes> guardarExamenes(@Valid @RequestBody Examenes examenes){
         Examenes nueva = service.guardarExamenes(examenes);
-        return ResponseEntity.status(201).body(nueva);
+
+        return ResponseEntity
+                .status(201)
+                .body(nueva);
     }
 
+
+    // GET ALL
+    @GetMapping("/listar")
+    public ResponseEntity<List<Examenes>> listar() {
+
+        return ResponseEntity.ok(service.listar());
+    }
+
+
+    // GET DTO POR PACIENTE
     @GetMapping("/paciente/{id}")
-    public ResponseEntity<List<ExamenDetalleDTO>> obtenerPorPaciente(@PathVariable Integer id) {
-        List<ExamenDetalleDTO> detalles = service.obtenerExamenDTO(id);
-        return ResponseEntity.ok(detalles);
+    public ResponseEntity<List<ExamenDetalleDTO>> obtenerPorPaciente(
+            @PathVariable Integer id) {
+
+        return ResponseEntity.ok(
+                service.obtenerExamenDTO(id)
+        );
     }
 
+
+    // GET DTO POR ID
     @GetMapping("/buscar/{id}")
-    public ResponseEntity<ExamenDetalleDTO> buscarPorId(@PathVariable Integer id) {
-        // Llamamos al service para obtener el DTO con nombres
-        ExamenDetalleDTO examen = service.obtenerExamenPorId(id);
-        return ResponseEntity.ok(examen);
+    public ResponseEntity<ExamenDetalleDTO> buscarPorId(
+            @PathVariable Integer id) {
+
+        return ResponseEntity.ok(
+                service.obtenerExamenPorId(id)
+        );
+    }
+
+
+    // PUT - ACTUALIZAR
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<Examenes> actualizar(
+            @PathVariable Integer id,
+            @RequestBody Examenes examenActualizado) {
+
+        return ResponseEntity.ok(
+                service.actualizar(id, examenActualizado)
+        );
+    }
+
+
+    // DELETE - ELIMINAR
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<Void> eliminar(
+            @PathVariable Integer id) {
+
+        service.eliminar(id);
+
+        return ResponseEntity.noContent().build();
     }
 }

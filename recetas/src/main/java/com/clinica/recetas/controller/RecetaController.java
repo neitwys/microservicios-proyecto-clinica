@@ -36,13 +36,13 @@ public class RecetaController {
     }
 
   
-    @GetMapping
+    @GetMapping("/listar")
     public List<RecetaMostrarDTO> listar() {
         return  service.listarTodas();
     }
 
   
-    @GetMapping("/{id}")
+    @GetMapping("/buscar/{id}")
     public RecetaMostrarDTO buscarPorId(
             @PathVariable Integer id) {
 

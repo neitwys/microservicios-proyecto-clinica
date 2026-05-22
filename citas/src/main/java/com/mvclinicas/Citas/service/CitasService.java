@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.mvclinicas.Citas.model.Citas;
-import com.mvclinicas.Citas.repository.CitaRepository;
 import com.mvclinicas.Citas.dto.PagoCrearDTO;
 import com.mvclinicas.Citas.dto.PagoMostrarDTO;
+import com.mvclinicas.Citas.model.Citas;
+import com.mvclinicas.Citas.repository.CitaRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,9 +19,8 @@ public class CitasService {
     @Autowired
     private CitaRepository repository;
 
-   
-    //  CREAR CITA CON PAGO
     
+    // CREAR CITA
     public Citas crearCita(Citas cita) {
 
         // Validar disponibilidad del médico
@@ -32,13 +31,18 @@ public class CitasService {
         );
 
         if (existe) {
-            throw new RuntimeException("El médico ya tiene una cita en ese horario");
+            throw new RuntimeException(
+                    "El médico ya tiene una cita en ese horario"
+            );
         }
 
         // Validar fecha y hora actual
         if (cita.getFecha().isEqual(LocalDate.now()) &&
-            cita.getHora().isBefore(LocalTime.now())) {
-            throw new RuntimeException("No puedes agendar en una hora pasada");
+                cita.getHora().isBefore(LocalTime.now())) {
+
+            throw new RuntimeException(
+                    "No puedes agendar en una hora pasada"
+            );
         }
 
         // Estado inicial
@@ -48,15 +52,15 @@ public class CitasService {
         Citas citaGuardada = repository.save(cita);
 
         
-        //LLAMAR A MICROSERVICIO PAGOS
-        
+        // MICROSERVICIO PAGOS
         try {
+
             RestTemplate restTemplate = new RestTemplate();
 
             PagoCrearDTO pagoDTO = PagoCrearDTO.builder()
                     .idCita(citaGuardada.getIdCita())
                     .idPaciente(citaGuardada.getIdPaciente())
-                    .monto(20000.0) // puedes hacerlo dinámico
+                    .monto(20000.0)
                     .metodoPago("TARJETA")
                     .build();
 
@@ -68,63 +72,119 @@ public class CitasService {
                     PagoMostrarDTO.class
             );
 
-            // Guardar idPago si todo sale bien
+            // Guardar idPago
             if (pago != null) {
+
                 citaGuardada.setIdPago(pago.getId());
+
                 repository.save(citaGuardada);
             }
 
         } catch (Exception e) {
-            // No detiene la cita, pero informa el error
-            System.out.println("Error al conectar con pagos: " + e.getMessage());
+
+            System.out.println(
+                    "Error al conectar con pagos: "
+                            + e.getMessage()
+            );
         }
 
         return citaGuardada;
     }
 
-    
-    //  OBTENER POR ID
-    
+
+    // OBTENER POR ID
     public Citas obtenerPorId(Integer id) {
+
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+                .orElseThrow(() ->
+                        new RuntimeException("Cita no encontrada"));
     }
 
-    //  LISTAR TODAS
-  
+
+    // LISTAR TODAS
     public List<Citas> listar() {
+
         return repository.findAll();
     }
 
-    
-    //  LISTAR POR PACIENTE
-    
+
+    // LISTAR POR PACIENTE
     public List<Citas> listarPorPaciente(Integer idPaciente) {
+
         return repository.findByIdPaciente(idPaciente);
     }
 
-    
-    // lISTAR POR MÉDICO
-    
+
+    // LISTAR POR MÉDICO
     public List<Citas> listarPorMedico(Integer idMedico) {
+
         return repository.findByIdMedico(idMedico);
     }
 
-    // CONFIRMAR CITA
-    
-    public Citas confirmarCita(Integer id) {
-        Citas cita = obtenerPorId(id);
-        cita.setEstado("CONFIRMADA");
+
+    // ACTUALIZAR
+    public Citas actualizar(Integer id, Citas citaActualizada) {
+
+        Citas cita = repository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Cita no encontrada"));
+
+        // Validar horario ocupado
+        boolean existe = repository.existsByIdMedicoAndFechaAndHora(
+                citaActualizada.getIdMedico(),
+                citaActualizada.getFecha(),
+                citaActualizada.getHora()
+        );
+
+        // Evita conflicto consigo misma
+        if (existe &&
+                !cita.getIdCita().equals(id)) {
+
+            throw new RuntimeException(
+                    "El médico ya tiene una cita en ese horario"
+            );
+        }
+
+        cita.setIdPaciente(citaActualizada.getIdPaciente());
+        cita.setIdMedico(citaActualizada.getIdMedico());
+        cita.setFecha(citaActualizada.getFecha());
+        cita.setHora(citaActualizada.getHora());
+        cita.setMotivo(citaActualizada.getMotivo());
+        cita.setEstado(citaActualizada.getEstado());
+
         return repository.save(cita);
     }
 
-    
-    //  CANCELAR CITA
-    
-    public Citas cancelarCita(Integer id) {
+
+    // ELIMINAR
+    public void eliminar(Integer id) {
+
+        Citas cita = repository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Cita no encontrada"));
+
+        repository.delete(cita);
+    }
+
+
+    // CONFIRMAR CITA
+    public Citas confirmarCita(Integer id) {
+
         Citas cita = obtenerPorId(id);
+
+        cita.setEstado("CONFIRMADA");
+
+        return repository.save(cita);
+    }
+
+
+    // CANCELAR CITA
+    public Citas cancelarCita(Integer id) {
+
+        Citas cita = obtenerPorId(id);
+
         cita.setEstado("CANCELADA");
+
         return repository.save(cita);
     }
 }
-
