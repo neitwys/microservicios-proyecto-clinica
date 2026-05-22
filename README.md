@@ -67,6 +67,6 @@ Dado que los PC de la universidad no cuentan con HeidiSQL instalado de forma ind
 
     Verifica en el panel izquierdo que aparezcan creadas automáticamente las bases de datos del proyecto (ej: clinica_pagos_db, clinica_autenticacion_db, etc.).
 
-Paso 5: Correr los Microservicios
+### Paso 5: Correr los Microservicios
 
 Vuelve a VS Code, ve al Spring Boot Dashboard (o usa la terminal integrada de VS Code que sí te deja compilar Java) y dale Play a cada microservicio para que se conecten a la base de datos de Docker y empiecen a funcionar.
