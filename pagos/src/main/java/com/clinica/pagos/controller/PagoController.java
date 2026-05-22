@@ -32,7 +32,7 @@ public class PagoController {
         return ResponseEntity.ok(service.listarTodos());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/buscar/{id}")
     public ResponseEntity<PagoMostrarDTO> buscarPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }

@@ -29,7 +29,7 @@ public class UsuarioController {
         this.service = service;
     }
 
-    @PostMapping("/registrar")
+    @PostMapping("/crear")
     public ResponseEntity<UsuarioMostrarDTO> registrarUsuario(@Valid @RequestBody UsuarioRegistroDTO usuarioRegistroDTO) {
         Usuario nuevoUsuario = service.guardarUsuario(usuarioRegistroDTO);
 
