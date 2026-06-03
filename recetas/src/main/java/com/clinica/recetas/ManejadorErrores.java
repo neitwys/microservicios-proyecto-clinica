@@ -14,12 +14,9 @@ import com.clinica.recetas.DTO.ErrorDTO;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+@RestControllerAdvice
 public class ManejadorErrores {
 
-    @RestControllerAdvice
-public class GlobalExceptionHandler {
-
-    // VALIDACIONES @Valid
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDTO> manejarValidaciones(
             MethodArgumentNotValidException ex,
@@ -42,7 +39,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    // RUNTIME EXCEPTION
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorDTO> manejarRuntime(
             RuntimeException ex,
@@ -59,7 +55,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    // EXCEPCIÓN GENERAL
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDTO> manejarGeneral(
             Exception ex,
@@ -75,6 +70,4 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
-}
-
 }
