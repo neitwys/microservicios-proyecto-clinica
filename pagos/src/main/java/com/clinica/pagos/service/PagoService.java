@@ -58,7 +58,7 @@ public PagoMostrarDTO registrarPago(PagoCrearDTO dto) {
         notiRequest.put("mensaje", "Tu pago de $" + guardado.getMonto() + " ha sido registrado exitosamente.");
         notiRequest.put("tipo", "EMAIL");
 
-        restTemplate.postForObject("http://localhost:8087/notificaciones/enviar", notiRequest, String.class);
+        restTemplate.postForObject("http://localhost:8087/notificaciones/crear", notiRequest, String.class);
     } catch (RestClientException e) {
         System.out.println("Error al enviar notificación: " + e.getMessage());
     }
