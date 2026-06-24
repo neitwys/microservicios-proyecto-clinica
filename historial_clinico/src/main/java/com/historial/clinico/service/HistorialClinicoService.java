@@ -1,14 +1,21 @@
 package com.historial.clinico.service;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
+import com.historial.clinico.dto.CitaEnHistorialDTO;
 import com.historial.clinico.dto.HistorialClinicoDTO;
 import com.historial.clinico.dto.HistorialClinicoResponseDTO;
+import com.historial.clinico.dto.PagoEnHistorialDTO;
+import com.historial.clinico.dto.RecetaEnHistorialDTO;
 import com.historial.clinico.model.HistorialClinico;
 import com.historial.clinico.repository.HistorialClinicoRepository;
 
@@ -79,6 +86,10 @@ public class HistorialClinicoService {
     }
 
     private HistorialClinicoResponseDTO toResponseDTO(HistorialClinico historial) {
+        List<CitaEnHistorialDTO> citas = obtenerCitas(historial.getIdPaciente());
+        List<PagoEnHistorialDTO> pagos = obtenerPagos(historial.getIdPaciente());
+        List<RecetaEnHistorialDTO> recetas = obtenerRecetas(historial.getIdPaciente());
+
         return HistorialClinicoResponseDTO.builder()
                 .id(historial.getId())
                 .idPaciente(historial.getIdPaciente())
@@ -86,7 +97,54 @@ public class HistorialClinicoService {
                 .fechaConsulta(historial.getFechaConsulta())
                 .diagnostico(historial.getDiagnostico())
                 .medicoResponsable(historial.getMedicoResponsable())
+                .citas(citas)
+                .pagos(pagos)
+                .recetas(recetas)
                 .build();
+    }
+
+    private List<CitaEnHistorialDTO> obtenerCitas(Long idPaciente) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            CitaEnHistorialDTO[] citas = restTemplate.getForObject(
+                    "http://localhost:8082/citas/paciente/" + idPaciente,
+                    CitaEnHistorialDTO[].class
+            );
+            return citas != null ? List.of(citas) : Collections.emptyList();
+        } catch (RestClientException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    private List<PagoEnHistorialDTO> obtenerPagos(Long idPaciente) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            PagoEnHistorialDTO[] pagos = restTemplate.getForObject(
+                    "http://localhost:8084/pagos/listar",
+                    PagoEnHistorialDTO[].class
+            );
+
+            if (pagos == null) return Collections.emptyList();
+
+            return List.of(pagos).stream()
+                    .filter(p -> p.getIdPaciente() != null && p.getIdPaciente().equals(idPaciente.intValue()))
+                    .collect(Collectors.toList());
+        } catch (RestClientException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    private List<RecetaEnHistorialDTO> obtenerRecetas(Long idPaciente) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            RecetaEnHistorialDTO[] recetas = restTemplate.getForObject(
+                    "http://localhost:8086/recetas/paciente/" + idPaciente,
+                    RecetaEnHistorialDTO[].class
+            );
+            return recetas != null ? List.of(recetas) : Collections.emptyList();
+        } catch (RestClientException e) {
+            return Collections.emptyList();
+        }
     }
 
     private HistorialClinico toEntity(HistorialClinicoDTO dto) {

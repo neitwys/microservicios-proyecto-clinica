@@ -30,10 +30,11 @@ public class ManejadorErrores {
             });
 
             //Se crea un objeto ErrorDTO con la información del error
+            String mensajeGeneral = "Datos inválidos: revisa los campos requeridos";
             ErrorDTO errorDTO = new ErrorDTO(
                 LocalDateTime.now(),
                 400,
-                "Error de validación",
+                mensajeGeneral,
                 errores,
                 request.getRequestURI()
             );

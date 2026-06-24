@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.clinica.notificaciones.model.Notificacion;
 import com.clinica.notificaciones.service.NotificacionService;
 
-@WebMvcTest(controllers = NotificacionController.class})
+@WebMvcTest(controllers = NotificacionController.class)
 class NotificacionControllerTest {
 
     @Autowired
