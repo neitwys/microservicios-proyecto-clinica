@@ -25,6 +25,25 @@ spring:
           uri: lb://RECETAS
           predicates:
             - Path=/recetas/**
+        
+        # 4. Ruta para Autenticación
+        - id: ruta-autenticacion
+          uri: lb://AUTENTICACION
+          predicates:
+            - Path=/autenticacion/**
+
+        # 5. Ruta para Pagos
+        - id: ruta-pagos
+          uri: lb://PAGOS
+          predicates:
+            - Path=/pagos/**
+        
+        # 6. Ruta para Notificaciones
+        - id: ruta-notificaciones
+          uri: lb://NOTIFICACIONES
+          predicates:
+            - Path=/notificaciones/**
+
 
 eureka:
   client:
