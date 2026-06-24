@@ -1,0 +1,43 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        # 1. Ruta para Exámenes (Limpia y directa)
+        - id: ruta-examenes
+          uri: lb://EXAMENES
+          predicates:
+            - Path=/examenes/**
+
+        # 2. Ruta para Citas
+        - id: ruta-citas
+          uri: lb://CITAS
+          predicates:
+            - Path=/citas/**
+
+        # 3. Ruta para Recetas
+        - id: ruta-recetas
+          uri: lb://RECETAS
+          predicates:
+            - Path=/recetas/**
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    hostname: 127.0.0.1
+    instance-id: 127.0.0.1:${spring.application.name}:${server.port}
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
