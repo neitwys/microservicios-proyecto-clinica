@@ -40,19 +40,34 @@ public class PagoService {
         return convertirADTO(pago);
     }
     
-public PagoMostrarDTO registrarPago(PagoCrearDTO dto) {
+    public PagoMostrarDTO registrarPago(PagoCrearDTO dto) {
+    boolean yaEstaPagado = repository.existsByIdCitaAndEstado(dto.getIdCita(), "COMPLETADO");
+
+    if (yaEstaPagado) {
+        throw new IllegalStateException("La cita ID " + dto.getIdCita() + " ya cuenta con un pago completado.");
+    }
+
     Pago pago = new Pago();
     pago.setIdCita(dto.getIdCita());
     pago.setIdPaciente(dto.getIdPaciente());
     pago.setMonto(dto.getMonto());
     pago.setMetodoPago(dto.getMetodoPago());
-    pago.setEstado("COMPLETADO"); // Si el pago es exitoso
+    pago.setEstado("COMPLETADO"); 
 
     Pago guardado = repository.save(pago);
 
     try {
         RestTemplate restTemplate = new RestTemplate();
+        
+        String urlCitas = "http://localhost:8082/citas/" + guardado.getIdCita() + "/confirmar?idPago=" + guardado.getId();
+        
+        restTemplate.put(urlCitas, null);
+    } catch (RestClientException e) {
+        System.out.println("Error al notificar la confirmación al microservicio de Citas: " + e.getMessage());
+    }
 
+    try {
+        RestTemplate restTemplate = new RestTemplate();
         java.util.Map<String, String> notiRequest = new java.util.HashMap<>();
         notiRequest.put("destinatario", "Paciente ID: " + guardado.getIdPaciente());
         notiRequest.put("mensaje", "Tu pago de $" + guardado.getMonto() + " ha sido registrado exitosamente.");
@@ -101,7 +116,7 @@ public PagoMostrarDTO registrarPago(PagoCrearDTO dto) {
         if (id == null) return "No asignado";
         RestTemplate restTemplate = new RestTemplate();
         try {
-            // Asumiendo que Autenticación sigue en el 8081
+            
             String url = "http://localhost:8081/autenticacion/buscar/" + id;
             Usuario user = restTemplate.getForObject(url, Usuario.class);
             return (user != null) ? user.getNombre() : "Desconocido";

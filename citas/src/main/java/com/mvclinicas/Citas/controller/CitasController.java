@@ -130,10 +130,10 @@ public class CitasController {
         @ApiResponse(responseCode = "404", description = "Cita no encontrada"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
+    
     @PutMapping("/{id}/confirmar")
-    public ResponseEntity<Citas> confirmar(@PathVariable Integer id) {
-
-        return ResponseEntity.ok(service.confirmarCita(id));
+    public ResponseEntity<Citas> confirmar(@PathVariable Integer id, @RequestParam Integer idPago) {
+        return ResponseEntity.ok(service.confirmarCita(id, idPago));
     }
 
     @Operation(
@@ -166,5 +166,10 @@ public class CitasController {
         service.eliminar(id);
 
         return ResponseEntity.noContent().build();
+    }
+    
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> manejarCitaYaConfirmada(IllegalStateException ex) {
+        return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

@@ -100,4 +100,10 @@ public class PagoController {
     public ResponseEntity<PagoMostrarDTO> actualizarPago(@PathVariable Integer id, @Valid @RequestBody PagoCrearDTO dto) {
         return ResponseEntity.ok(service.actualizarPago(id, dto));
     }
+
+    
+    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> manejarPagoDuplicado(IllegalStateException ex) {
+    return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST).body(ex.getMessage());
+}
 }
