@@ -21,75 +21,28 @@ public class CitasService {
 
     
     // CREAR CITA
-    public Citas crearCita(Citas cita) {
+public Citas crearCita(Citas cita) {
 
-        // Validar disponibilidad del médico
-        boolean existe = repository.existsByIdMedicoAndFechaAndHora(
-                cita.getIdMedico(),
-                cita.getFecha(),
-                cita.getHora()
-        );
+    boolean existe = repository.existsByIdMedicoAndFechaAndHora(
+            cita.getIdMedico(),
+            cita.getFecha(),
+            cita.getHora()
+    );
 
-        if (existe) {
-            throw new RuntimeException(
-                    "El médico ya tiene una cita en ese horario"
-            );
-        }
-
-        // Validar fecha y hora actual
-        if (cita.getFecha().isEqual(LocalDate.now()) &&
-                cita.getHora().isBefore(LocalTime.now())) {
-
-            throw new RuntimeException(
-                    "No puedes agendar en una hora pasada"
-            );
-        }
-
-        // Estado inicial
-        cita.setEstado("PENDIENTE");
-
-        // Guardar cita
-        Citas citaGuardada = repository.save(cita);
-
-        
-        // MICROSERVICIO PAGOS
-        try {
-
-            RestTemplate restTemplate = new RestTemplate();
-
-            PagoCrearDTO pagoDTO = PagoCrearDTO.builder()
-                    .idCita(citaGuardada.getIdCita())
-                    .idPaciente(citaGuardada.getIdPaciente())
-                    .monto(20000.0)
-                    .metodoPago("TARJETA")
-                    .build();
-
-            String url = "http://localhost:8082/pagos/crear";
-
-            PagoMostrarDTO pago = restTemplate.postForObject(
-                    url,
-                    pagoDTO,
-                    PagoMostrarDTO.class
-            );
-
-            // Guardar idPago
-            if (pago != null) {
-
-                citaGuardada.setIdPago(pago.getId());
-
-                repository.save(citaGuardada);
-            }
-
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al conectar con pagos: "
-                            + e.getMessage()
-            );
-        }
-
-        return citaGuardada;
+    if (existe) {
+        throw new RuntimeException("El médico ya tiene una cita en ese horario");
     }
+
+    if (cita.getFecha().isEqual(LocalDate.now()) &&
+            cita.getHora().isBefore(LocalTime.now())) {
+        throw new RuntimeException("No puedes agendar en una hora pasada");
+    }
+
+    cita.setEstado("PENDIENTE");
+    cita.setIdPago(null); 
+
+    return repository.save(cita);
+}
 
 
     // OBTENER POR ID
@@ -168,15 +121,22 @@ public class CitasService {
 
 
     // CONFIRMAR CITA
-    public Citas confirmarCita(Integer id) {
+    public Citas confirmarCita(Integer id, Integer idPago) { 
+    Citas cita = obtenerPorId(id);
 
-        Citas cita = obtenerPorId(id);
-
-        cita.setEstado("CONFIRMADA");
-
-        return repository.save(cita);
+    if ("CONFIRMADA".equals(cita.getEstado())) {
+        throw new IllegalStateException("La cita con ID " + id + " ya se encuentra CONFIRMADA.");
+    }
+    
+    if ("CANCELADA".equals(cita.getEstado())) {
+        throw new IllegalStateException("No se puede confirmar una cita que ya fue CANCELADA.");
     }
 
+    cita.setEstado("CONFIRMADA");
+    cita.setIdPago(idPago); 
+
+    return repository.save(cita);
+    }
 
     // CANCELAR CITA
     public Citas cancelarCita(Integer id) {
