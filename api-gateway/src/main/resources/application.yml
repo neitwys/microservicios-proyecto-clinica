@@ -44,18 +44,6 @@ spring:
           predicates:
             - Path=/notificaciones/**
 
-        # 7. Ruta para Soporte
-        - id: ruta-soporte
-          uri: lb://SOPORTE
-          predicates:
-            - Path=/soporte/**
-
-        # 8. Ruta para Historial Clínico
-        - id: ruta-historial-clinico
-          uri: lb://HISTORIAL_CLINICO
-          predicates:
-            - Path=/historial_clinico/**
-
 
 eureka:
   client:

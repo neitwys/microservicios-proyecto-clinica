@@ -32,7 +32,13 @@ public class ApiGatewayApplication {
         System.out.println(" URL: http://localhost:8090");
         System.out.println("------------------------------------------------");
         System.out.println(" /api/examenes/** -> examenes");
-     
+        System.out.println(" /api/autenticacion/** -> autenticacion");
+        System.out.println(" /api/citas/** -> citas");
+        System.out.println(" /api/historial/** -> historial");
+        System.out.println(" /api/notificaciones/** -> notificaciones");
+        System.out.println(" /api/pagos/** -> pagos");
+        System.out.println(" /api/recetas/** -> recetas");
+        System.out.println(" /api/soporte/** -> soporte");
         System.out.println("------------------------------------------------");
         System.out.println(" Eureka: http://localhost:8761");
         System.out.println("================================================");
