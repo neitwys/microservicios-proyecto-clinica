@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -31,8 +32,9 @@ public class Usuario {
     @NotBlank
     private String nombre;
 
+    @Email
     @NotBlank
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
     @NotBlank
